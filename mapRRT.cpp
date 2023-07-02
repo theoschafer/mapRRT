@@ -48,13 +48,13 @@ int nb_total_simulations = 1;
 
 //image to process------------------------------------------------------------------------------------------------------
 
-//string image_name = "im_with_coord.png";
-//const int WIDTH = 1683 ;
-//const int HEIGHT = 925 ;
+string image_name = "im_with_coord.png";
+const int WIDTH = 1683 ;
+const int HEIGHT = 925 ;
 
-string image_name = "MIT_SP_boats.png";
-const int WIDTH = 3989 ;
-const int HEIGHT = 2333 ;
+//string image_name = "MIT_SP_boats.png";
+//const int WIDTH = 3989 ;
+//const int HEIGHT = 2333 ;
 
 //string image_name = "square.PNG";
 //const int WIDTH = 164 ;
@@ -554,8 +554,8 @@ Mat image = imread(image_name);
     // Apply a morphological operation (erosion or dilation) to remove noise and improve the quality of the thresholded image
     Mat eroded_image;
     Mat dilated_image;
-    //Mat kernel = getStructuringElement(MORPH_RECT, Size(1, 1)); // used to have no margin, for comparing with smart rrt algo on the corner of obstacle
-   Mat kernel = getStructuringElement(MORPH_RECT, Size(15, 15)); //used for both square and water, gives some margin around obstacle
+    Mat kernel = getStructuringElement(MORPH_RECT, Size(3, 3)); // used to have no margin, for comparing with smart rrt algo on the corner of obstacle
+   //Mat kernel = getStructuringElement(MORPH_RECT, Size(15, 15)); //used for both square and water, gives some margin around obstacle
     erode(thresholded_image, eroded_image, kernel);
     dilate(thresholded_image, dilated_image, kernel);
 
@@ -611,13 +611,13 @@ Mat image = imread(image_name);
     Mat drawn_image = image.clone();
     
     // Draws all the obstacle at once
-    drawContours(drawn_image, contours, -1, Scalar(0, 255, 0), FILLED);
+    //drawContours(drawn_image, contours, -1, Scalar(0, 255, 0), FILLED);
 
 	// Change color for each obstacle
-   // for (int i = 0; i < contours.size(); i++)
-//	{
-//	 polylines(drawn_image, contours[i], true, Scalar(i, i*10, i*20), 8);
-//	}
+    for (int i = 0; i < contours.size(); i++)
+	{
+	 polylines(drawn_image, contours[i], true, Scalar(0*randomCoordinate(0.0, 1.0), 250*randomCoordinate(0.0, 1.0), 0*randomCoordinate(0.0, 1.0)), 4);
+}
 
 
 
