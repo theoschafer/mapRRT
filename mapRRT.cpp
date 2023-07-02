@@ -14,6 +14,7 @@
 
 //includes files and namespaces ---------------------------------------
 
+#include <cmath>
 #include <iostream>
 #include <cstdio>
 #include <random>
@@ -34,7 +35,7 @@ using namespace std ;
 //visualization and simulation parameters--------------------------------------------------------------------------------
 
 
-bool see_image_processing_only = true;
+bool see_image_processing_only = false;
 bool visualize_sampling_area = false;
 bool visualize_sampling = false; 
 int nb_max_iterations = 1000 ;
@@ -80,8 +81,8 @@ const int RADIUS = 5 ;
 const double GOAL_SAMPLING_PROB = 0.05;
 const double INF = 1e18;
 
-//const double JUMP_SIZE = (WIDTH/100.0 * HEIGHT/100.0)/1.5; //for im_with_coord.png
-const double JUMP_SIZE = (WIDTH/100.0 * HEIGHT/100.0)/10; //for MIT_SP.png
+const double JUMP_SIZE = (WIDTH/100.0 * HEIGHT/100.0)/1.5; //for im_with_coord.png
+//const double JUMP_SIZE = (WIDTH/100.0 * HEIGHT/100.0)/10; //for MIT_SP.png
 //const double JUMP_SIZE = 5; //for square.PNG
 //const double JUMP_SIZE = 55; //for narrowpass.png
 //const double JUMP_SIZE = 75; //for bugtrap.png
@@ -260,9 +261,24 @@ void draw(sf::RenderWindow& window) {
 			line[1] = sf::Vertex(sf::Vector2f(nodes[node].x, nodes[node].y));
 			line[0].color = line[1].color = sf::Color::Red; // orange color 
 			
+			//Create rectangles instead of lines for the main path, in order to be able to set the thickness of the line and make it more visible
+			    sf::Vector2f p1(nodes[par].x, nodes[par].y);
+			    sf::Vector2f p2(nodes[node].x, nodes[node].y);
+			    
+			    // Calculate the length and angle of the "line"
+			    float length = sqrt((p2.x - p1.x)*(p2.x - p1.x) + (p2.y - p1.y)*(p2.y - p1.y));
+			    float angle = atan2(p2.y - p1.y, p2.x - p1.x) * 180 / M_PI;
+
+			    sf::RectangleShape line_rectangle(sf::Vector2f(length, 4)); // 2 is the thickness
+			    line_rectangle.setPosition(p1);
+			    line_rectangle.setRotation(angle);
+			    line_rectangle.setFillColor(sf::Color::Red); // Set color to red
+			
+			
 			path_points.push_back(nodes[node]);
 			
-			window.draw(line, 2, sf::Lines);
+			window.draw(line_rectangle);
+			//window.draw(line, 2, sf::Lines);
 			
 			if (visualize_sampling_area)
 			{
@@ -433,9 +449,9 @@ void RRT() {
 		path_point_id = 0;
 		}
 		
-		//newPoint = pickRandomPointAround(path_points[path_point_id].x,path_points[path_point_id].y, 50); //for im_with_coord.png
+		newPoint = pickRandomPointAround(path_points[path_point_id].x,path_points[path_point_id].y, 50); //for im_with_coord.png
 		//newPoint = pickRandomPointAround(path_points[path_point_id].x,path_points[path_point_id].y, 5); //for square.png
-		newPoint = pickRandomPointAround(path_points[path_point_id].x,path_points[path_point_id].y, 15); //for smartRRT.png
+		//newPoint = pickRandomPointAround(path_points[path_point_id].x,path_points[path_point_id].y, 15); //for smartRRT.png
 		path_point_id++;
 		}
 		
@@ -554,8 +570,8 @@ Mat image = imread(image_name);
     // Apply a morphological operation (erosion or dilation) to remove noise and improve the quality of the thresholded image
     Mat eroded_image;
     Mat dilated_image;
-    Mat kernel = getStructuringElement(MORPH_RECT, Size(3, 3)); // used to have no margin, for comparing with smart rrt algo on the corner of obstacle
-   //Mat kernel = getStructuringElement(MORPH_RECT, Size(15, 15)); //used for both square and water, gives some margin around obstacle
+   // Mat kernel = getStructuringElement(MORPH_RECT, Size(3, 3)); // used to have no margin, for comparing with smart rrt algo on the corner of obstacle
+   Mat kernel = getStructuringElement(MORPH_RECT, Size(15, 15)); //used for both square and water, gives some margin around obstacle
     erode(thresholded_image, eroded_image, kernel);
     dilate(thresholded_image, dilated_image, kernel);
 
@@ -680,10 +696,10 @@ if (!see_image_processing_only)
 {
 
 
-//start.x = 350; //for im_with_coord.png
-//start.y = 300;
-//stop.x = 700;
-//stop.y = 100;
+start.x = 350; //for im_with_coord.png
+start.y = 300;
+stop.x = 700;
+stop.y = 100;
 
 //start.x = 2;  //for square.PNG
 //start.y = 110;
@@ -695,10 +711,10 @@ if (!see_image_processing_only)
 //stop.x = 550;
 //stop.y = 10;
 
-start.x = 110;  //for bugtrap.PNG
-start.y = 300;
-stop.x = 550;
-stop.y = 25;
+//start.x = 110;  //for bugtrap.PNG
+//start.y = 300;
+//stop.x = 550;
+//stop.y = 25;
 
 //start.x = 119;  //for smartRRTtest.png
 //start.y = 111;
