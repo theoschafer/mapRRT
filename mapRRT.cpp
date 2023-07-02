@@ -14,6 +14,7 @@
 
 //includes files and namespaces ---------------------------------------
 
+#include <chrono>
 #include <cmath>
 #include <iostream>
 #include <cstdio>
@@ -38,7 +39,7 @@ using namespace std ;
 bool see_image_processing_only = false;
 bool visualize_sampling_area = false;
 bool visualize_sampling = false; 
-int nb_max_iterations = 1000 ;
+int nb_max_iterations = 2000 ;
 int nb_max_iterations_after_found = 1000;
 bool optimize_sampling_nodes = true; 
 bool optimize_sampling_obstacles = false; 
@@ -49,9 +50,9 @@ int nb_total_simulations = 1;
 
 //image to process------------------------------------------------------------------------------------------------------
 
-string image_name = "im_with_coord.png";
-const int WIDTH = 1683 ;
-const int HEIGHT = 925 ;
+//string image_name = "im_with_coord.png";
+//const int WIDTH = 1683 ;
+//const int HEIGHT = 925 ;
 
 //string image_name = "MIT_SP_boats.png";
 //const int WIDTH = 3989 ;
@@ -69,9 +70,29 @@ const int HEIGHT = 925 ;
 //const int WIDTH = 600 ;
 //const int HEIGHT = 453 ;
 
-//string image_name = "bugtrap.png";
-//const int WIDTH = 600 ;
-//const int HEIGHT = 453 ;
+string image_name = "bugtrap.png";
+const int WIDTH = 600 ;
+const int HEIGHT = 453 ;
+
+//string image_name = "M2.png";
+//const int WIDTH = 416 ;
+//const int HEIGHT = 413 ;
+
+//string image_name = "M3.png";
+//const int WIDTH = 413 ;
+//const int HEIGHT = 412 ;
+
+//string image_name = "M4.png";
+//const int WIDTH = 411 ;
+//const int HEIGHT = 409 ;
+
+//string image_name = "M5.png";
+//const int WIDTH = 450 ;
+//const int HEIGHT = 450 ;
+
+//string image_name = "M6.png";
+//const int WIDTH = 442 ;
+//const int HEIGHT = 443 ;
 
 
 
@@ -81,10 +102,12 @@ const int RADIUS = 5 ;
 const double GOAL_SAMPLING_PROB = 0.05;
 const double INF = 1e18;
 
-const double JUMP_SIZE = (WIDTH/100.0 * HEIGHT/100.0)/1.5; //for im_with_coord.png
+//const double JUMP_SIZE = (WIDTH/100.0 * HEIGHT/100.0)/1.5; //for im_with_coord.png
 //const double JUMP_SIZE = (WIDTH/100.0 * HEIGHT/100.0)/10; //for MIT_SP.png
 //const double JUMP_SIZE = 5; //for square.PNG
 //const double JUMP_SIZE = 55; //for narrowpass.png
+//const double JUMP_SIZE = 55; //for M3.png
+const double JUMP_SIZE = (WIDTH+HEIGHT)/6 ; //tentative for all maps 
 //const double JUMP_SIZE = 75; //for bugtrap.png
 //const double JUMP_SIZE = 15; //for smartRRT.png
 const double DISK_SIZE = JUMP_SIZE ; // Ball radius around which nearby points are found 
@@ -269,7 +292,7 @@ void draw(sf::RenderWindow& window) {
 			    float length = sqrt((p2.x - p1.x)*(p2.x - p1.x) + (p2.y - p1.y)*(p2.y - p1.y));
 			    float angle = atan2(p2.y - p1.y, p2.x - p1.x) * 180 / M_PI;
 
-			    sf::RectangleShape line_rectangle(sf::Vector2f(length, 4)); // 2 is the thickness
+			    sf::RectangleShape line_rectangle(sf::Vector2f(length, 6)); // 2 is the thickness
 			    line_rectangle.setPosition(p1);
 			    line_rectangle.setRotation(angle);
 			    line_rectangle.setFillColor(sf::Color::Red); // Set color to red
@@ -449,9 +472,9 @@ void RRT() {
 		path_point_id = 0;
 		}
 		
-		newPoint = pickRandomPointAround(path_points[path_point_id].x,path_points[path_point_id].y, 50); //for im_with_coord.png
+		//newPoint = pickRandomPointAround(path_points[path_point_id].x,path_points[path_point_id].y, 50); //for im_with_coord.png
 		//newPoint = pickRandomPointAround(path_points[path_point_id].x,path_points[path_point_id].y, 5); //for square.png
-		//newPoint = pickRandomPointAround(path_points[path_point_id].x,path_points[path_point_id].y, 15); //for smartRRT.png
+		newPoint = pickRandomPointAround(path_points[path_point_id].x,path_points[path_point_id].y, 15); //for smartRRT.png
 		path_point_id++;
 		}
 		
@@ -565,13 +588,14 @@ Mat image = imread(image_name);
     // Apply a threshold to the image to isolate the dark areas that correspond to the water bodies
     Mat thresholded_image;
   //threshold(gray_image, thresholded_image, 100, 10, THRESH_BINARY_INV); //this line is for black obstacles. remove _INV for water area (since we want dark zones to be not obstacles)// for square.png
-  threshold(gray_image, thresholded_image, 80, 255, THRESH_BINARY); // for water area (since we want dark zones to be not obstacles)// for im_with_coord.png
+  threshold(gray_image, thresholded_image, 40, 10, THRESH_BINARY_INV); // for M6 this line is for black obstacles. remove _INV for water area (since we want dark zones to be not obstacles)// for square.png
+  //threshold(gray_image, thresholded_image, 80, 255, THRESH_BINARY); // for water area (since we want dark zones to be not obstacles)// for im_with_coord.png
 
     // Apply a morphological operation (erosion or dilation) to remove noise and improve the quality of the thresholded image
     Mat eroded_image;
     Mat dilated_image;
-   // Mat kernel = getStructuringElement(MORPH_RECT, Size(3, 3)); // used to have no margin, for comparing with smart rrt algo on the corner of obstacle
-   Mat kernel = getStructuringElement(MORPH_RECT, Size(15, 15)); //used for both square and water, gives some margin around obstacle
+    Mat kernel = getStructuringElement(MORPH_RECT, Size(1, 1)); // used to have no margin, for comparing with smart rrt algo on the corner of obstacle
+   //Mat kernel = getStructuringElement(MORPH_RECT, Size(15, 15)); //used for both square and water, gives some margin around obstacle
     erode(thresholded_image, eroded_image, kernel);
     dilate(thresholded_image, dilated_image, kernel);
 
@@ -627,7 +651,7 @@ Mat image = imread(image_name);
     Mat drawn_image = image.clone();
     
     // Draws all the obstacle at once
-    //drawContours(drawn_image, contours, -1, Scalar(0, 255, 0), FILLED);
+    drawContours(drawn_image, contours, -1, Scalar(0, 255, 0), FILLED);
 
 	// Change color for each obstacle
     for (int i = 0; i < contours.size(); i++)
@@ -651,6 +675,8 @@ Mat image = imread(image_name);
 
 
 ////////////////////////////////////////////RRT part
+
+auto start_time = std::chrono::high_resolution_clock::now(); //Starts measuring time here
 
 while (nb_simulations < nb_total_simulations)
 
@@ -696,10 +722,36 @@ if (!see_image_processing_only)
 {
 
 
-start.x = 350; //for im_with_coord.png
-start.y = 300;
-stop.x = 700;
-stop.y = 100;
+//start.x = 350; //for im_with_coord.png
+//start.y = 300;
+//stop.x = 700;
+//stop.y = 100;
+
+//start.x = 220;  //for M2.png
+//start.y = 370;
+//stop.x = 220;
+//stop.y = 50;
+
+//start.x = 10;  //for M3.png
+//start.y = 400;
+//stop.x = 400;
+//stop.y = 10;
+
+//start.x = 220;  //for M4.png
+//start.y = 200;
+//stop.x = 220;
+//stop.y = 50;
+
+//start.x = 130;  //for M5.png
+//start.y = 10;
+//stop.x = 300;
+//stop.y = 400;
+
+
+//start.x = 200;  //for M6.png
+//start.y = 220;
+//stop.x = 330;
+//stop.y = 40;
 
 //start.x = 2;  //for square.PNG
 //start.y = 110;
@@ -711,10 +763,10 @@ stop.y = 100;
 //stop.x = 550;
 //stop.y = 10;
 
-//start.x = 110;  //for bugtrap.PNG
-//start.y = 300;
-//stop.x = 550;
-//stop.y = 25;
+start.x = 110;  //for bugtrap.PNG
+start.y = 300;
+stop.x = 550;
+stop.y = 25;
 
 //start.x = 119;  //for smartRRTtest.png
 //start.y = 111;
@@ -831,6 +883,14 @@ vector < MyLib::GeometryPoint > poly ;
         
         if(pathFound) 
         {
+        if(iterations_after_found==0)
+        {
+        auto end_time = std::chrono::high_resolution_clock::now();
+
+		    // calculate and print the duration
+		    auto duration_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
+		    std::cout << "Found after: " << duration_time/1000.0 << " seconds." << std::endl;
+        }
         iterations_after_found++; 
         convergence_logs << "1," << iterations << "," << path_points.size() << "," << cost[goalIndex] << "\n"; //write the distance only after found (to check convergence only)
         }
@@ -846,16 +906,21 @@ vector < MyLib::GeometryPoint > poly ;
 			cout << endl ;
 		}
 		
-		if (iterations_after_found == nb_max_iterations_after_found)
-		//if (iterations == nb_max_iterations)
+		//if (iterations_after_found == nb_max_iterations_after_found)
+		if (iterations == nb_max_iterations)
 		{
 		
-		//converting pixels to long and lat of the forrest tif file
 		
 		
+		auto end_time = std::chrono::high_resolution_clock::now();
+
+		    // calculate and print the duration
+		    auto duration_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
+		    std::cout << "Duration: " << duration_time/1000.0 << " seconds." << std::endl;
+
 		
 		
-		//writing a plug file 
+		 //converting pixels to long and lat of the forrest tif file and writing a plug file 
 		
 		
 		
