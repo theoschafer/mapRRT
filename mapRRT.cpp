@@ -70,9 +70,13 @@ int nb_total_simulations = 1;
 //const int WIDTH = 600 ;
 //const int HEIGHT = 453 ;
 
-string image_name = "bugtrap.png";
-const int WIDTH = 600 ;
-const int HEIGHT = 453 ;
+//string image_name = "bugtrap.png";
+//const int WIDTH = 600 ;
+//const int HEIGHT = 453 ;
+
+string image_name = "complex_env.png";
+const int WIDTH = 601 ;
+const int HEIGHT = 451 ;
 
 //string image_name = "M2.png";
 //const int WIDTH = 416 ;
@@ -763,10 +767,15 @@ if (!see_image_processing_only)
 //stop.x = 550;
 //stop.y = 10;
 
-start.x = 110;  //for bugtrap.PNG
-start.y = 300;
-stop.x = 550;
-stop.y = 25;
+//start.x = 110;  //for bugtrap.PNG
+//start.y = 300;
+//stop.x = 550;
+//stop.y = 25;
+
+start.x = 10;  //for complex_env.PNG
+start.y = 440;
+stop.x = 590;
+stop.y = 10;
 
 //start.x = 119;  //for smartRRTtest.png
 //start.y = 111;
