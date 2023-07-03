@@ -45,7 +45,7 @@ bool optimize_sampling_nodes = true;
 bool optimize_sampling_obstacles = false; 
 
 int nb_simulations = 0;
-int nb_total_simulations = 1;
+int nb_total_simulations = 3;
 
 
 //image to process------------------------------------------------------------------------------------------------------
@@ -680,11 +680,12 @@ Mat image = imread(image_name);
 
 ////////////////////////////////////////////RRT part
 
-auto start_time = std::chrono::high_resolution_clock::now(); //Starts measuring time here
+
 
 while (nb_simulations < nb_total_simulations)
 
 {
+
 path_point_id =0;
 obstacle_id =0;
 obstacle_vertex_id =0;
@@ -701,7 +702,7 @@ goalIndex = -1 ;
 pathFound = 0 ;
 
 
-
+auto start_time = std::chrono::high_resolution_clock::now(); //Starts measuring time here
 
 
 ////////////////////////////////////////////////////////
@@ -718,7 +719,7 @@ string file_path = "../" ;
 string file_instruction = file_path+file_name;
 
 convergence_logs.open (file_instruction);
-convergence_logs << "test, rrt iteration, number of waypoints, distance to goal\n";
+convergence_logs << "test, rrt iteration, number of waypoints, distance to goal, time\n";
 
 
 
@@ -892,16 +893,16 @@ vector < MyLib::GeometryPoint > poly ;
         
         if(pathFound) 
         {
-        if(iterations_after_found==0)
-        {
+       // if(iterations_after_found==0)
+       // {
         auto end_time = std::chrono::high_resolution_clock::now();
 
 		    // calculate and print the duration
 		    auto duration_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
-		    std::cout << "Found after: " << duration_time/1000.0 << " seconds." << std::endl;
-        }
+		    //std::cout << "Found after: " << duration_time/1000.0 << " seconds." << std::endl;
+       // }
         iterations_after_found++; 
-        convergence_logs << "1," << iterations << "," << path_points.size() << "," << cost[goalIndex] << "\n"; //write the distance only after found (to check convergence only)
+        convergence_logs << "1," << iterations << "," << path_points.size() << "," << cost[goalIndex] << "," << duration_time << "\n"; //write the distance only after found (to check convergence only)
         }
         
         //convergence_logs << "1," << iterations << "," << path_points.size() << "," << cost[goalIndex] << "\n"; //write all the distance for all iterations
