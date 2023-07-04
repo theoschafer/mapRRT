@@ -39,13 +39,13 @@ using namespace std ;
 bool see_image_processing_only = false;
 bool visualize_sampling_area = false;
 bool visualize_sampling = false; 
-int nb_max_iterations = 2000 ;
+int nb_max_iterations = 1000 ;
 int nb_max_iterations_after_found = 1000;
 bool optimize_sampling_nodes = true; 
 bool optimize_sampling_obstacles = false; 
 
 int nb_simulations = 0;
-int nb_total_simulations = 3;
+int nb_total_simulations = 1;
 
 
 //image to process------------------------------------------------------------------------------------------------------
@@ -111,7 +111,7 @@ const double INF = 1e18;
 //const double JUMP_SIZE = 5; //for square.PNG
 //const double JUMP_SIZE = 55; //for narrowpass.png
 //const double JUMP_SIZE = 55; //for M3.png
-const double JUMP_SIZE = (WIDTH+HEIGHT)/6 ; //tentative for all maps 
+const double JUMP_SIZE = (WIDTH+HEIGHT)/9 ; //tentative for all maps (except bugtrap)
 //const double JUMP_SIZE = 75; //for bugtrap.png
 //const double JUMP_SIZE = 15; //for smartRRT.png
 const double DISK_SIZE = JUMP_SIZE ; // Ball radius around which nearby points are found 
@@ -478,7 +478,7 @@ void RRT() {
 		
 		//newPoint = pickRandomPointAround(path_points[path_point_id].x,path_points[path_point_id].y, 50); //for im_with_coord.png
 		//newPoint = pickRandomPointAround(path_points[path_point_id].x,path_points[path_point_id].y, 5); //for square.png
-		newPoint = pickRandomPointAround(path_points[path_point_id].x,path_points[path_point_id].y, 15); //for smartRRT.png
+		newPoint = pickRandomPointAround(path_points[path_point_id].x,path_points[path_point_id].y, 45); //for smartRRT.png
 		path_point_id++;
 		}
 		
@@ -899,7 +899,7 @@ vector < MyLib::GeometryPoint > poly ;
 
 		    // calculate and print the duration
 		    auto duration_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
-		    //std::cout << "Found after: " << duration_time/1000.0 << " seconds." << std::endl;
+		   // std::cout << "Found after: " << duration_time/1000.0 << " seconds." << std::endl;
        // }
         iterations_after_found++; 
         convergence_logs << "1," << iterations << "," << path_points.size() << "," << cost[goalIndex] << "," << duration_time << "\n"; //write the distance only after found (to check convergence only)
